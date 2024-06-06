@@ -11,12 +11,6 @@ The largest missing part are the good visuals and the upgrade system.
 ## TODOs
 
 - Upgrade Tree
-
-- Split into multiple code windows
-  - Extract the functions and make them available in the other code windows
-
-- Nicer Editor Theme (dark)
-
 - Visuals
   - Entities
   - Items
@@ -24,9 +18,11 @@ The largest missing part are the good visuals and the upgrade system.
   - Background
   - UI
     - Inventory
+    - Split into multiple code windows
+      - Extract the functions and make them available in the other code windows
+      - Better code theme (dark mode)
     - Upgrade Tree
     - Camera interaction
-
 - Maze?
 - Dinos?
 - Automation of upgrades?
