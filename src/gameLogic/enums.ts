@@ -85,7 +85,7 @@ export type FieldEntry = {
     growth: number;
     water: number;
     ground: GroundKey;
-    measure: number | null;
+    measure: number; // -1 for no measure
 };
 
 export type GameData = {

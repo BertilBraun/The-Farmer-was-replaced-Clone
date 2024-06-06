@@ -1,6 +1,16 @@
 
-export const gameLibraryFunctionsWithParams = ['delay', 'move', 'measure', 'harvest', 'plant', 'trade', 'use_item', 'num_items', 'swap'];
-export const gameLibraryFunctionsWithoutParams = ['get_pos_x', 'get_pos_y', 'get_world_size', 'get_water', 'can_harvest', 'till'];
+export const gameLibraryFunctionsWithParams = ['delay', 'move', 'measure', 'plant', 'trade', 'use_item', 'num_items', 'swap'];
+export const gameLibraryFunctionParameters = {
+    'delay': 'seconds',
+    'move': 'dir',
+    'measure': 'dir',
+    'plant': 'Entity.',
+    'trade': 'Item.',
+    'use_item': 'Item.',
+    'num_items': 'Item.',
+    'swap': 'Direction.',
+};
+export const gameLibraryFunctionsWithoutParams = ['get_pos_x', 'get_pos_y', 'get_world_size', 'get_water', 'harvest', 'can_harvest', 'till'];
 
 export const allowedStdLibFunctions = [
     'print',

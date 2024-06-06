@@ -61,7 +61,7 @@ const Scene: React.FC<SceneProps> = ({ time }) => {
   // console.log('lightPosition', lightPosition);
 
   return (
-    <Canvas style={{ height: '500px', border: '1px solid black' }}>
+    <Canvas style={{ height: '500px', width: '800px', border: '1px solid black' }}>
       <ambientLight />
       <PerspectiveCamera
         makeDefault

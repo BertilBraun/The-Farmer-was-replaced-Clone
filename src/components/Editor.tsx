@@ -6,16 +6,16 @@ import { syntaxTree, LRLanguage, indentNodeProp, delimitedIndent, foldNodeProp, 
 import { NodeWeakMap, IterMode, SyntaxNode } from '@lezer/common';
 import { snippetCompletion, ifNotIn, completeFromList, Completion } from '@codemirror/autocomplete';
 import { Entity, Ground, Item } from '../gameLogic/enums';
-import { allowedStdLibFunctions, allowedTypes, gameLibraryFunctionsWithParams, gameLibraryFunctionsWithoutParams } from '../gameLogic/allowed';
+import { allowedStdLibFunctions, allowedTypes, gameLibraryFunctionParameters, gameLibraryFunctionsWithParams, gameLibraryFunctionsWithoutParams } from '../gameLogic/allowed';
 
 
 // Define completions
-const createCompletion = (label: string, type: string, applyOffset: number) => ({
+const createCompletion = (label: string, type: string, applyOffset: number, parameter: string = '') => ({
   label,
   type,
   apply: (view: any, completion: any, from: number, to: number) => {
     view.dispatch({
-      changes: { from, to, insert: `${label}()` },
+      changes: { from, to, insert: `${label}(${parameter})` },
       selection: { anchor: from + label.length + applyOffset }
     });
   }
@@ -26,7 +26,7 @@ const entityCompletions = Object.keys(Entity).map(key => ({ label: `Entity.${key
 const groundCompletions = Object.keys(Ground).map(key => ({ label: `Ground.${key}`, type: 'enum' }));
 
 const gameLibraryCompletions = [
-  ...gameLibraryFunctionsWithParams.map(n => createCompletion(n, 'function', 1)),
+  ...gameLibraryFunctionsWithParams.map(n => createCompletion(n, 'function', 1 + gameLibraryFunctionParameters[n as keyof typeof gameLibraryFunctionParameters].length, gameLibraryFunctionParameters[n as keyof typeof gameLibraryFunctionParameters])),
   ...gameLibraryFunctionsWithoutParams.map(n => createCompletion(n, 'function', 2))
 ];
 

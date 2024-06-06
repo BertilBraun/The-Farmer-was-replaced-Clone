@@ -7,7 +7,8 @@ import { Button } from './components/Button';
 import { TimeDisplay } from './components/TimeDisplay';
 import { Communication, Inventory, Settings } from './gameLogic/accessors';
 import { processCode } from './gameLogic/processCode';
-import { initializeGame } from './gameLogic/logic';
+import { initializeGame, loadGame, resetGame, saveGame } from './gameLogic/logic';
+import { gameLibraryFunctionParameters, gameLibraryFunctionsWithParams, gameLibraryFunctionsWithoutParams } from './gameLogic/allowed';
 
 const STARTER_CODE = `print('Hello, world!')
 print('Harvesting all the Pumpkins!')
@@ -46,7 +47,7 @@ function App() {
     }
     console.log('Running code: ', codeToRun);
 
-    initializeGame();
+    loadGame();
 
     setInventory(Inventory.all());
     setRunning(Communication.running);
@@ -93,17 +94,38 @@ function App() {
 
   return (
     <div className="App">
-      <main>
+      <main style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <TimeDisplay seconds={time} />
-          <Button onClick={startCodeExecution} disabled={running}>Run</Button>
-          <Button onClick={stopCodeExecution} disabled={!running}>Stop</Button>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Button onClick={startCodeExecution} disabled={running}>Run</Button>
+              <Button onClick={stopCodeExecution} disabled={!running}>Stop</Button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Button onClick={saveGame} disabled={running}>Save</Button>
+              <Button onClick={resetGame} disabled={running}>Reset</Button>
+            </div>
+          </div>
           <Editor onCodeChange={setCode} code={code} />
-          <InventoryDisplay inventory={inventory} />
         </div>
         <Scene time={time} />
-      </main>
-    </div>
+        <InventoryDisplay inventory={inventory} />
+        <div style={{ margin: 5, padding: 5, border: '1px solid black' }}>
+          <p>Available functions:</p>
+          {gameLibraryFunctionsWithParams.map(func => (
+            <div key={func} style={{ margin: 5, padding: 5, border: '1px solid black' }}>
+              {func + '(' + gameLibraryFunctionParameters[func as keyof typeof gameLibraryFunctionParameters].replace('.', '').toLowerCase() + ')'}
+            </div>
+          ))}
+          {gameLibraryFunctionsWithoutParams.map(func => (
+            <div key={func} style={{ margin: 5, padding: 5, border: '1px solid black' }}>
+              {func + '()'}
+            </div>
+          ))}
+        </div>
+      </main >
+    </div >
   );
 }
 

@@ -1,3 +1,4 @@
+import { game_data, set_game_data } from "./accessors";
 import { Entity, GameData, Ground, Item, ItemKey } from "./enums";
 
 export function initializeGame() {
@@ -25,18 +26,18 @@ export function initializeGame() {
         //     growth: 0.0,
         //     water: 0.0,
         //     ground: Ground.DIRT.identifier,
-        //     measure: null,
+        //     measure: -1,
         // }),
         field: [
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
-            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: null },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
+            { type: Entity.PUMPKIN.identifier, growth: 1.0, water: 0.0, ground: Ground.DIRT.identifier, measure: -1 },
         ],
         // Initial inventory = 0 for all items
         inventory: Object.fromEntries(Object.keys(Item).map(key => [key as ItemKey, 0])) as Record<ItemKey, number>,
@@ -54,4 +55,27 @@ export function initializeGame() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myWindow = window as any;
     myWindow.game_data = gameData;
+}
+
+export const saveGame = () => {
+    const gameData = game_data();
+    if (gameData === undefined) return;
+    localStorage.setItem('saveData', JSON.stringify(gameData));
+}
+
+export const loadGame = () => {
+    const saveData = localStorage.getItem('saveData');
+    if (!saveData) {
+        console.error('No save data found');
+        resetGame();
+        return;
+    }
+    const gameData = JSON.parse(saveData);
+    if (gameData === undefined) return;
+    set_game_data(gameData);
+}
+
+export const resetGame = () => {
+    initializeGame();
+    saveGame();
 }

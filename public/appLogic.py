@@ -65,6 +65,7 @@ def __error_exit(error_message: str):
 
     traceback.print_exc()
     print('Error:', error_message)
+    print('Error exit')
 
     from browser import window
 

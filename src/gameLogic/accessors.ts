@@ -1,9 +1,15 @@
 import { Entity, EntityKey, EntityType, FieldEntry, GameData, Ground, GroundKey, GroundType, ItemKey } from "./enums";
 
-function game_data(): GameData | undefined {
+export function game_data(): GameData | undefined {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myWindow = window as any;
     return myWindow.game_data;
+}
+
+export function set_game_data(data: GameData) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const myWindow = window as any;
+    myWindow.game_data = data;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -128,10 +134,14 @@ export class Field {
     }
 
     static get_measure(x: number, y: number): number | null {
-        return Field._get(x, y).measure;
+        const measure = Field._get(x, y).measure;
+        if (measure === -1) return null;
+        return measure;
     }
 
     static set_measure(x: number, y: number, measure: number | null) {
+        if (measure === null) measure = -1;
+        else if (measure < 0) throw new Error('Measure must be greater than or equal to 0. -1 is used to indicate no measure.');
         Field._get(x, y).measure = measure;
     }
 }

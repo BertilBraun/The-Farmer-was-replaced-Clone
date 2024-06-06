@@ -183,11 +183,18 @@ class __Field:
         __Field._get(x, y)['water'] = water
 
     @staticmethod
-    def get_measure(x: int, y: int):
-        return __Field._get(x, y)['measure']
+    def get_measure(x: int, y: int) -> int | None:
+        measure = __Field._get(x, y)['measure']
+        if measure == -1:
+            return None
+        return measure
 
     @staticmethod
-    def set_measure(x: int, y: int, measure) -> None:
+    def set_measure(x: int, y: int, measure: int | None) -> None:
+        if measure is None:
+            measure = -1
+        elif measure < 0:
+            raise ValueError('Measure must be a positive integer. -1 is used to indicate no measure')
         __Field._get(x, y)['measure'] = measure
 
 
