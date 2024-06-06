@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import Editor from './components/Editor';
 import Scene from './components/Scene';
-import Inventory from './components/Inventory';
-import { initializeGame, processCode } from './GameLogic';
+import InventoryDisplay from './components/Inventory';
 import './App.css';
+import { Button } from './components/Button';
+import { TimeDisplay } from './components/TimeDisplay';
+import { Communication, Inventory, Settings } from './gameLogic/accessors';
+import { processCode } from './gameLogic/processCode';
+import { initializeGame } from './gameLogic/logic';
 
 const STARTER_CODE = `print('Hello, world!')
 print('Harvesting all the Pumpkins!')
@@ -25,23 +29,30 @@ print('Goodbye, world!')`;
 
 function App() {
   const [code, setCode] = useState(STARTER_CODE);
-  const [running, setRunning] = useState(false);
   const [time, setTime] = useState(0.0);
+  const [running, setRunning] = useState(false);
+  const [inventory, setInventory] = useState(Inventory.all());
 
   const startCodeExecution = async () => {
-    if (window.running) {
-      console.log('Already running');
+    if (Communication.running) {
+      console.error('Already running');
       return;
     }
 
+    const codeToRun = await processCode(code);
+    if (!codeToRun) {
+      console.error('Error processing code');
+      return;
+    }
+    console.log('Running code: ', codeToRun);
+
     initializeGame();
 
-    window.stop = false;
-    window.running = true; // The important global variable to communicate with the code execution
-    setRunning(true); // Update UI
+    setInventory(Inventory.all());
+    setRunning(Communication.running);
 
-    const codeToRun = await processCode(code);
-    console.log('Running code: ', codeToRun);
+    Communication.stop_running = false;
+    Communication.running = true;
 
     const script = document.createElement('script');
     script.type = 'text/python';
@@ -49,34 +60,36 @@ function App() {
     document.body.appendChild(script);
 
     let last_time = 0.0;
-    while (window.running) {
+    while (Communication.running) {
       // Spin with 5ms delay until the code execution is done
       await new Promise(resolve => setTimeout(resolve, 5));
-      if (window.game_data.time - last_time > 1 / 30) {
+      if (Settings.total_play_time - last_time > 1 / 30) {
         // Update the time to update the UI -> only do this every 1/30th of a second
-        setTime(window.game_data.time)
-        last_time = window.game_data.time;
+        setTime(Settings.total_play_time);
+        setInventory(Inventory.all());
+        setRunning(Communication.running);
+        last_time = Settings.total_play_time;
       }
     }
 
-    if (window.error && !window.error.includes('Stopping execution')) {
-      console.error(window.error);
-      alert(window.error);
-      window.error = null;
+    if (Communication.error && !Communication.error.includes('Stopping execution')) {
+      console.error(Communication.error);
+      alert(Communication.error);
+      Communication.error = null;
     }
 
     document.body.removeChild(script);
-    setRunning(false);
+    setTime(Settings.total_play_time);
+    setInventory(Inventory.all());
+    setRunning(Communication.running);
 
     console.log('Done');
   }
 
   const stopCodeExecution = () => {
-    window.stop = true;
+    Communication.stop_running = true;
     console.log('Stopping execution');
   }
-
-  const inventory = Object.entries(window.game_data?.inventory ?? {});
 
   return (
     <div className="App">
@@ -85,11 +98,11 @@ function App() {
       </header>
       <main>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div>Time: {time.toFixed(0)} sec</div>
-          <button onClick={startCodeExecution} disabled={running} style={{ width: 100 }}>Run</button>
-          <button onClick={stopCodeExecution} disabled={!running} style={{ width: 100 }}>Stop</button>
+          <TimeDisplay seconds={time} />
+          <Button onClick={startCodeExecution} disabled={running}>Run</Button>
+          <Button onClick={stopCodeExecution} disabled={!running}>Stop</Button>
           <Editor onCodeChange={setCode} code={code} />
-          <Inventory inventory={inventory} />
+          <InventoryDisplay inventory={inventory} />
         </div>
         <Scene time={time} />
       </main>

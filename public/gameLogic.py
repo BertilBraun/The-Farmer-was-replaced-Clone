@@ -37,20 +37,20 @@ class Item(Enum):
     HAY = 'Hay', []
     WOOD = 'Wood', []
     CARROT = 'Carrot', []
-    CARROT_SEED = 'Carrot Seed', [(WOOD, 1), (HAY, 1)]
+    CARROT_SEED = 'Carrot Seed', [('WOOD', 1), ('HAY', 1)]
     PUMPKIN = 'Pumpkin', []
-    PUMPKIN_SEED = 'Pumpkin Seed', [(CARROT, 2)]
-    EMPTY_BUCKET = 'Empty Bucket', [(WOOD, 5)]
+    PUMPKIN_SEED = 'Pumpkin Seed', [('CARROT', 2)]
+    EMPTY_BUCKET = 'Empty Bucket', [('WOOD', 5)]
     FULL_BUCKET = 'Full Bucket', []
-    FERTILIZER = 'Fertilizer', [(PUMPKIN, 10)]
-    SUNFLOWER_SEED = 'Sunflower Seed', [(CARROT, 5)]
+    FERTILIZER = 'Fertilizer', [('PUMPKIN', 10)]
+    SUNFLOWER_SEED = 'Sunflower Seed', [('CARROT', 5)]
     POWER = 'Power', []
-    CACTUS_SEED = 'Cactus Seed', [(POWER, 5)]
+    CACTUS_SEED = 'Cactus Seed', [('POWER', 5)]
     CACTUS = 'Cactus', []
 
     @property
     def required_items(self) -> list[tuple['Item', int]]:
-        return [(__get_item_from_name(item[0]), count) for item, count in self.value[1]]  # type: ignore
+        return [(__get_item_from_identifier(item), count) for item, count in self.value[1]]
 
 
 __USABLE_ITEMS = [Item.FULL_BUCKET, Item.FERTILIZER]
@@ -84,25 +84,25 @@ class Ground(Enum):
     TILLED = 'Tilled'
 
 
-def __get_entity_from_name(name: str) -> Entity:
+def __get_entity_from_identifier(identifier: str) -> Entity:
     for entity in Entity:
-        if entity.value[0] == name:
+        if entity.name == identifier:
             return entity
-    raise ValueError(f'Invalid entity name: {name}')
+    raise ValueError(f'Invalid entity name: {identifier}')
 
 
-def __get_item_from_name(name: str) -> Item:
+def __get_item_from_identifier(identifier: str) -> Item:
     for item in Item:
-        if item.value[0] == name:
+        if item.name == identifier:
             return item
-    raise ValueError(f'Invalid item name: {name}')
+    raise ValueError(f'Invalid item name: {identifier}')
 
 
-def __get_ground_from_name(name: str) -> Ground:
+def __get_ground_from_identifier(identifier: str) -> Ground:
     for ground in Ground:
-        if ground.value == name:
+        if ground.name == identifier:
             return ground
-    raise ValueError(f'Invalid ground name: {name}')
+    raise ValueError(f'Invalid ground name: {identifier}')
 
 
 class __Settings:
@@ -152,19 +152,19 @@ class __Field:
 
     @staticmethod
     def get_type(x: int, y: int) -> Entity:
-        return __get_entity_from_name(__Field._get(x, y)['type'])
+        return __get_entity_from_identifier(__Field._get(x, y)['type'])
 
     @staticmethod
     def set_type(x: int, y: int, entity: Entity) -> None:
-        __Field._get(x, y)['type'] = entity.value[0]
+        __Field._get(x, y)['type'] = entity.name
 
     @staticmethod
     def get_ground(x: int, y: int) -> Ground:
-        return __get_ground_from_name(__Field._get(x, y)['ground'])
+        return __get_ground_from_identifier(__Field._get(x, y)['ground'])
 
     @staticmethod
     def set_ground(x: int, y: int, ground: Ground) -> None:
-        __Field._get(x, y)['ground'] = ground.value
+        __Field._get(x, y)['ground'] = ground.name
 
     @staticmethod
     def get_growth(x: int, y: int) -> float:
@@ -194,11 +194,11 @@ class __Field:
 class __Inventory:
     @staticmethod
     def get(item: Item) -> float:
-        return window.game_data['inventory'][item.value[0]]
+        return window.game_data['inventory'][item.name]
 
     @staticmethod
     def set(item: Item, value: float) -> None:
-        window.game_data['inventory'][item.value[0]] = value
+        window.game_data['inventory'][item.name] = value
 
     @staticmethod
     def add(item: Item, value: float) -> None:
@@ -239,7 +239,7 @@ def __calculate_delay_time_for_operations(num_operations: int) -> float:
 
 
 async def __system(num_operations=__DEFAULT_NUM_OPERATIONS) -> None:
-    if window.stop:
+    if window.game_data.communication.stop_running:
         raise Exception('Stopping execution')
 
     global __last_update_time

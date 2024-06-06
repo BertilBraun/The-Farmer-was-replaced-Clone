@@ -56,7 +56,7 @@ def __indent_code(code: str) -> str:
 def __exit():
     from browser import window
 
-    window.running = False
+    window.game_data.communication.running = False
     exit()
 
 
@@ -68,7 +68,7 @@ def __error_exit(error_message: str):
 
     from browser import window
 
-    window.error = error_message
+    window.game_data.communication.error = error_message
     __exit()
 
 
