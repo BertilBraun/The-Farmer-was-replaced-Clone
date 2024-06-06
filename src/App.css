@@ -1,13 +1,5 @@
-.App-header {
-    background-color: #282c34;
-    padding: 20px;
-    color: white;
-    text-align: center;
-}
-
 main {
     display: flex;
     align-items: start;
-    height: 80vh;
     padding: 20px;
 }

@@ -93,9 +93,6 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>3D Coding Game</h1>
-      </header>
       <main>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <TimeDisplay seconds={time} />

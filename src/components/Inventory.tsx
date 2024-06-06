@@ -1,18 +1,19 @@
 import React from 'react';
+import { Item, ItemKey } from '../gameLogic/enums';
 
 interface InventoryItemProps {
-  item: string;
+  item: ItemKey;
   count: number;
 }
 
 const InventoryItem: React.FC<InventoryItemProps> = ({ item, count }) => (
   <div style={{ margin: 5, padding: 5, border: '1px solid black' }}>
-    {item}: {count.toFixed(1)}
+    {Item[item].name}: {(item === 'POWER') ? count.toFixed(2) : count.toFixed(0)}
   </div>
 );
 
 interface InventoryProps {
-  inventory: [string, number][];
+  inventory: [ItemKey, number][];
 }
 
 const Inventory: React.FC<InventoryProps> = ({ inventory }) => (
